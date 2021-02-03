@@ -1,0 +1,20 @@
+data = 'C:/Users/Silvia/Desktop/Ana_Data_Science/R/Sesion1/footballsoccer.csv'
+data$Sumagoles<-c(data[,3]+data[,5])
+head(data)
+
+data <- mutate(data, date = as.Date(date, '%d/%m/%Y'))
+data[, 'Anio'] <- year(data[,1])
+data[,'Mes'] <- month(data[,1])
+data[,'o'] <- rep(1, length(data[,1]))
+inf <- data %>% group_by(year, month, o) %>% summarize(meangoalsmonth = mean(sumagoles))
+inf <- as.data.frame(inf)
+inf<- unite(inf, Date_Y_M_, c(1,2,3), sep ="/")
+inf <- mutate(inf, Date_Y_M = as.Date(Date_Y_M, '%Y/%m/%d'))
+head(inf)
+
+serie <- ts(inf$meangoalsmonth, start = c(2017,8, 1), end = c(2019, 12, 1), frequency = 12)
+serie
+
+ggplot(data = inf[1:25, ], aes(x = Date_Y_M_, y = meangoalsmonth)) +
+geom_line(color = "blue", size = 1) + geom_point() +
+xlab('Dates') + ylab('Average goals per month') + ggtitle('Graphic average goal per match')
